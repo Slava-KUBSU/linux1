@@ -17,18 +17,19 @@ jobs:
           docker run --privileged \
             -v $(pwd):/mnt \
             lolopopikop/kubsh_test:local /bin/bash -c "
-              echo '=== Запускаем check.sh ==='
+              echo '=== Копируем check.sh из /opt ==='
               
-              # Копируем скрипт из контейнера (если нужно)
-              if [ ! -f /mnt/check.sh ]; then
-                echo 'Копируем check.sh из контейнера...'
-                cp /check.sh /mnt/check.sh 2>/dev/null || true
-              fi
+              # Копируем check.sh из /opt
+              cp /opt/check.sh /mnt/check.sh
+              chmod +x /mnt/check.sh
+              
+              echo 'Содержимое check.sh:'
+              head -20 /mnt/check.sh
               
               # Запускаем тесты
               cd /mnt
-              chmod +x check.sh
-              ./check.sh || echo 'Тесты завершены'
+              echo '=== Запускаем check.sh ==='
+              ./check.sh
               
               # Проверяем что .deb создался
               if [ -f kubsh.deb ]; then
@@ -36,7 +37,7 @@ jobs:
                 ls -la kubsh.deb
               else
                 echo '⚠️ .deb пакет НЕ создан!'
-                echo 'Содержимое папки:'
+                echo 'Проверяем что есть в папке:'
                 ls -la
               fi
             "
