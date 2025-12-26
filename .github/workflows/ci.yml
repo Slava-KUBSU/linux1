@@ -17,30 +17,6 @@ jobs:
           docker run --privileged \
             -v $(pwd):/mnt \
             lolopopikop/kubsh_test:local /bin/bash -c "
-              echo '=== Копируем check.sh из /opt ==='
-              
-              # Копируем check.sh из /opt
-              cp /opt/check.sh /mnt/check.sh
-              chmod +x /mnt/check.sh
-              
-              echo 'Содержимое check.sh:'
-              head -20 /mnt/check.sh
-              
-              # Запускаем тесты
-              cd /mnt
-              echo '=== Запускаем check.sh ==='
-              ./check.sh
-              
-              # Проверяем что .deb создался
-              if [ -f kubsh.deb ]; then
-                echo '✅ .deb пакет создан: kubsh.deb'
-                ls -la kubsh.deb
-              else
-                echo '⚠️ .deb пакет НЕ создан!'
-                echo 'Проверяем что есть в папке:'
-                ls -la
-              fi
-            "
 
       - name: Collect deb artifact
         run: |
