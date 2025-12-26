@@ -12,7 +12,7 @@ jobs:
       - name: Checkout project
         uses: actions/checkout@v4
 
-      - name: Build, test and create kubsh.deb in Docker
+      - name: Build and test MY kubsh and create MY deb
         run: |
           docker run --privileged \
             -v $(pwd):/mnt \
@@ -20,18 +20,16 @@ jobs:
               set -e
               cd /mnt
 
-              echo '== Build kubsh =='
               make
 
-              echo '== Run tests (check.sh) =='
+              cp /opt/check.sh ./check.sh
               chmod +x check.sh
               ./check.sh
 
-              echo '== Verify kubsh.deb =='
-              ls -l kubsh.deb
+              test -f kubsh.deb
             "
 
-      - name: Upload kubsh.deb artifact
+      - name: Upload MY kubsh.deb
         uses: actions/upload-artifact@v4
         with:
           name: kubsh-deb
