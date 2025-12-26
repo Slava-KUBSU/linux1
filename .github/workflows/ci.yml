@@ -12,33 +12,26 @@ jobs:
       - name: Checkout project
         uses: actions/checkout@v4
 
-      - name: Run tests in Docker
+      - name: Build, test and create kubsh.deb in Docker
         run: |
           docker run --privileged \
             -v $(pwd):/mnt \
             lolopopikop/kubsh_test:local /bin/bash -c "
+              set -e
+              cd /mnt
 
-      - name: Collect deb artifact
-        run: |
-          echo "Ищем .deb файл..."
-          find . -name "*.deb" 2>/dev/null || echo ".deb файлов не найдено"
-          
-          if [ -f kubsh.deb ]; then
-            echo "Found kubsh.deb"
-          else
-            # Ищем ЛЮБОЙ .deb файл
-            find . -name "*.deb" -exec cp {} kubsh.deb \; 2>/dev/null || true
-            
-            if [ -f kubsh.deb ]; then
-              echo "Скопирован найденный .deb файл"
-            else
-              echo "⚠️ .deb файл не найден"
-              # Создаём пустой файл, чтобы CI не упал
-              touch kubsh.deb
-            fi
-          fi
+              echo '== Build kubsh =='
+              make
 
-      - name: Upload DEB artifact
+              echo '== Run tests (check.sh) =='
+              chmod +x check.sh
+              ./check.sh
+
+              echo '== Verify kubsh.deb =='
+              ls -l kubsh.deb
+            "
+
+      - name: Upload kubsh.deb artifact
         uses: actions/upload-artifact@v4
         with:
           name: kubsh-deb
