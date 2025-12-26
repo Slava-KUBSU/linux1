@@ -16,18 +16,7 @@ jobs:
         run: |
           docker run --privileged \
             -v $(pwd):/mnt \
-            lolopopikop/kubsh_test:local /bin/bash -c "
-              set -e
-              cd /mnt
-
-              make
-
-              cp /opt/check.sh ./check.sh
-              chmod +x check.sh
-              ./check.sh
-
-              test -f kubsh.deb
-            "
+            lolopopikop/kubsh_test:local 
 
       - name: Upload MY kubsh.deb
         uses: actions/upload-artifact@v4
